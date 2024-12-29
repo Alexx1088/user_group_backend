@@ -14,7 +14,7 @@ class Group extends Model
         'expire_hours',
     ];
 
-    public function users()
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGroupRequest;
+use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
+use App\Http\Resources\ShowGroupResource;
 use App\Models\Group;
 use Illuminate\Http\Request;
 
@@ -13,51 +16,44 @@ class GroupController extends Controller
         return GroupResource::collection(Group::paginate(10));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreGroupRequest $request): \Illuminate\Http\JsonResponse
     {
-        //
+        $group = Group::create([
+            'name' => $request->name,
+            'expire_hours' => $request->expire_hours,
+        ]);
+
+        return response()->json($group, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function show(string $id): ShowGroupResource
     {
-        //
+        $group = Group::with('users')->findOrFail($id);
+
+        return new ShowGroupResource($group);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+    public function update(UpdateGroupRequest $request, string $id): GroupResource
     {
-        //
+        $group = Group::findOrFail($id);
+
+        $group->update([
+            'name' => $request->name,
+            'expire_hours' => $request->expire_hours,
+        ]);
+
+        return new GroupResource($group);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(string $id): \Illuminate\Http\Response
     {
-        //
-    }
+        $group = Group::findOrFail($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $group->delete();
+
+        return response()->noContent();
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('expire_hours')->comment('Number of hours after which a user is removed from the group');
+            $table->integer('expired_hours')->comment('Number of hours after which a user is removed from the group');
             $table->timestamps();
         });
     }
