@@ -16,6 +16,8 @@ class Group extends Model
 
     public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot('expired_at')
+            ->withTimestamps();
     }
 }

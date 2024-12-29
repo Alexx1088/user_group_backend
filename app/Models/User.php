@@ -45,6 +45,8 @@ class User extends Authenticatable
 
     public function groups(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Group::class)
+            ->withPivot('expired_at')
+            ->withTimestamps();
     }
 }
