@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\GroupUser;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class GroupUserObserver
@@ -10,17 +11,16 @@ class GroupUserObserver
     /**
      * Handle the GroupUser "created" event.
      */
-    public function created(GroupUser $groupUser): void
+    public function creating(GroupUser $groupUser): void
     {
-        //Retrieve the group's expire_hours
-        $group = DB::table('group')
+        $group = DB::table('groups')
+
             ->where('id', $groupUser->group_id)->first();
 
         if ($group) {
-            // Set expired_at based on expire_hours
-            $groupUser->expired_at = now()->addHours($group->expire_hours);
 
-            $groupUser->save();
+            $groupUser->expired_at = Carbon::now()->addHours($group->expire_hours);
+
         }
 
     }

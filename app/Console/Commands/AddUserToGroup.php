@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Group;
+use App\Models\GroupUser;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -50,9 +51,9 @@ class AddUserToGroup extends Command
             $this->info('User activated');
         }
 
-        $user->groups()->syncWithoutDetaching([
-
-            $group->id => ['expired_at' => now()->addHours($group->expire_hours)],
+        GroupUser::create([
+            'user_id' => $userId,
+            'group_id' => $groupId
         ]);
 
         $this->info('User added to the group successfully.');
