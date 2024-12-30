@@ -23,9 +23,6 @@ class AddUserToGroup extends Command
      */
     protected $description = 'Add a user to a group and activate the user if inactive';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): int
     {
         $userId = $this->ask('Enter the user ID');

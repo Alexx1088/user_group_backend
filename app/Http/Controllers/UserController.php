@@ -38,11 +38,16 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $user->update([
+        $data = [
             'name' => $request['name'],
-            'email' => $request['email'],
             'active' => $request['active'],
-        ]);
+        ];
+
+        if ($request->has('email') && $request['email'] !== $user->email) {
+            $data['email'] = $request['email'];
+        }
+
+        $user->update($data);
 
         return new UserResource($user);
     }
