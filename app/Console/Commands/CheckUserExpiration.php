@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\UserGroupExpiration;
 use App\Models\GroupUser;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckUserExpiration extends Command
 {
@@ -21,17 +23,35 @@ class CheckUserExpiration extends Command
      *
      * @var string
      */
-    protected $description = 'Remove users from groups where expired_at is less than the current time';
+    protected $description = 'Remove users from groups whose expired_at time has passed and send them an email notification';
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        DB::table('group_user')
-            ->where('expired_at', '<', now())
-            ->delete();
+        $expiredUsers = DB::table('group_user')
+            ->join('users', 'users.id', '=', 'group_user.user_id')
+            ->join('groups', 'groups.id', '=', 'group_user.group_id')
+            ->where('expired_at', '<', Carbon::now())
+            ->select('group_user.user_id', 'group_user.group_id', 'users.name as user_name',
+                'users.email', 'groups.name as group_name')
+            ->get();
 
-        $this->info('Expired users have been removed from groups.');
+        foreach ($expiredUsers as $record) {
+
+            Mail::to($record->email)->send(new UserGroupExpiration($record->user_name, $record->group_name));
+
+            DB::table('group_user')
+                ->where('user_id', $record->user_id)
+                ->where('group_id', $record->group_id)
+                ->delete();
+
+            $this->info("User {$record->user_name} removed from group {$record->group_name} and email sent.");
+
+        }
+
+        $this->info('Expired users have been processed.');
+
     }
 }
