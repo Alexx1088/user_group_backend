@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\DeactivateUserJob;
 use App\Mail\UserGroupExpiration;
-use App\Models\GroupUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -42,7 +41,7 @@ class CheckUserExpiration extends Command
 
         foreach ($expiredUsers as $expiredUser) {
 
-          //  Mail::to($expiredUser->email)->send(new UserGroupExpiration($expiredUser->user_name, $expiredUser->group_name));
+            Mail::to($expiredUser->email)->send(new UserGroupExpiration($expiredUser->user_name, $expiredUser->group_name));
 
             DB::table('group_user')
                 ->where('user_id', $expiredUser->user_id)

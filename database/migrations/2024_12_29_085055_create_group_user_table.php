@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('group_user', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
-            $table->timestamp('expired_at')->nullable();
+            $table->dateTime('expired_at')->nullable();
             $table->unique(['user_id', 'group_id']);
             $table->timestamps();
         });
